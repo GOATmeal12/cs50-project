@@ -1,0 +1,88 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+Projects
+{% endblock %}
+
+
+{% block main %}
+<div class="container mt-5 mb-5">
+
+    <!-- Page Header -->
+    <div class="mb-4">
+        {% if filter == 'in-progress' %} 
+            <h1 class="fw-bold">Current Projects</h1>
+            <p class="text-muted">Track the projects you are currently working on.</p>
+
+        {% elif filter == 'completed' %}
+            <h1 class="fw-bold">Completed Projects</h1>
+            <p class="text-muted">
+                There is always room for improvement :)
+                Use this page to track projects you've learned to a satisfactory level.
+            </p>
+
+        {% elif filter =='archived' %} 
+            <h1 class="fw-bold">Archived Projects</h1>
+            <p class="text-muted">
+                Taking a break? These are projects you may revisit in the future.
+            </p>
+
+        {% else %} 
+            <h1 class="fw-bold">All Projects</h1> 
+            <p class="text-muted">
+                All the pieces you've worked on. What an impressive repertoire!
+            </p>
+        {% endif %}
+    </div>
+
+    <!-- Filter Dropdown -->
+    <div class="mb-4">
+        <form method="GET" action="/projects" class="d-inline">
+            <label class="form-label me-2 fw-semibold">Filter:</label>
+            <select name="filter"
+                    class="form-select d-inline w-auto"
+                    onchange="this.form.submit()">
+
+                <option value="in-progress" {% if filter == 'in-progress' %} selected {% endif %}>In Progress</option>
+                <option value="all" {% if filter == 'all' %} selected {% endif %}>All</option>
+                <option value="completed" {% if filter == 'completed' %} selected {% endif %}>Completed</option>
+                <option value="archived" {% if filter == 'archived' %} selected {% endif %}>Archived</option>
+
+            </select>
+        </form>
+    </div>
+
+    <!-- Project Cards -->
+    {% if pieces %}
+        <div class="row">
+            {% for piece in pieces %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 shadow-sm hover-shadow">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <a href="/project/{{ piece.project_id }}"
+                                   class="text-decoration-none">
+                                    {{ piece.composer }} – {{ piece.title }}
+                                </a>
+                            </h5>
+
+                            {% if filter == 'all' %}
+                                
+                                <span class="badge {{piece.status}}">
+                                    {{  piece.status.replace('-', ' ') }}
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            No projects found for this filter.
+        </div>
+    {% endif %}
+
+</div>
+
+{% endblock %}

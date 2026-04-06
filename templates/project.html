@@ -1,0 +1,91 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+Project - {{ project.title }}
+{% endblock %}
+
+{% block main %}
+
+<h1>{{ project.composer }} - {{ project.title }}</h1>
+
+<h2>
+    Status:
+    <span class="status {{ project.status }}">
+        {{ project.status.replace('-', ' ').title() }}
+    </span>
+</h2>
+
+<!-- Total Practice Time -->
+<div class="total-time">
+    Total Practice Time: {{ total_minutes | format_time }}
+</div>
+
+
+<!-- Log a new session -->
+<div class="project-container">
+<h3>Log Practice</h3>
+    <form method="POST" action="/project/{{ project.project_id }}/log">
+
+        
+        <input type="number" name="minutes" min="1" placeholder="Minutes" required>
+
+        <br>
+
+        <textarea autocomplete="off" name="notes" placeholder="Notes" rows="2"></textarea>
+        <button type="submit" class="btn btn-primary">Log</button>
+    
+
+        
+    </form>
+
+    <!-- Session History -->
+    <h3 name="practice-sessions">Practice Sessions</h3>
+    {% for s in practice_sessions %}
+        <button type="button"
+        class="session w-100 text-start border-0 bg-transparent"
+        data-bs-toggle="modal"
+        data-bs-target="#sessionModal"
+        data-id="{{ s.id }}"
+        data-minutes="{{ s.minutes }}"
+        data-notes="{{ s.notes|default('', true) }}">
+
+            <div class="session-header">
+                <strong>{{ s.minutes | format_time }}</strong>
+                <span class="timestamp">{{ s.created_at | format_datetime }}</span>
+            </div>
+                
+                {% if s.notes %}
+                    <div class="notes">{{ s.notes }}</div>
+                {%endif%}
+            
+        </button>
+
+
+     {% endfor %}
+
+     
+ <!-- Status Update -->
+    <h3>Project Actions</h3>
+    <form method="POST" action="/project/{{ project.project_id }}/status">
+        {% if project.status == 'in-progress' %}
+            <button name="status" value="completed" class="btn btn-primary">Mark as Complete</button>
+            <button name="status" value="archived" class="btn btn-primary">Archive</button>
+        {% else %}
+            <button name="status" value="in-progress" class="btn btn-primary">Resume Practice</button>
+        {% endif %}
+    </form>
+
+    <!-- Delete Project -->
+    <form method="POST" action="/project/{{ project.project_id }}/delete" onsubmit="return confirm('Delete this entire project and all sessions?');">
+        <button class="danger btn btn-danger">Delete Project</button>
+    </form>
+</div>
+
+<script src="{{ url_for('static', filename='home.js') }}"></script>
+   
+    {% include "partials/session_modal.html" %}
+
+   
+
+
+{% endblock %}

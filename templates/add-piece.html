@@ -1,0 +1,33 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+Add Piece
+{% endblock %}
+
+{%block main%}
+<div class="container mt-5 mb-5">
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+
+            <div class="card shadow-sm no-hover rounded overflow-hidden">
+                <div class="card-body">
+
+        <h2 class="fw-bold mb-3">Add another piece to your collection</h2>
+
+        <input type = "text" id="search" name = "search" placeholder="Search for a piece of music" class="mb-4" >
+            
+        
+                    
+                </div>
+                <ul id ="results" class="list-group rounded-0 border-top-0"></ul> 
+            </div>
+
+        </div>
+    </div>
+    
+</div>
+
+<script src="{{ url_for('static', filename='results.js') }}"></script>
+
+{%endblock%}

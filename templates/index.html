@@ -1,0 +1,97 @@
+{% extends 'layout.html' %} 
+
+{%block title%}
+
+Practice Journal - Home
+
+{%endblock%}
+
+{% block main %}
+
+<h1 class="welcome">{{message}}, {{ username }}!</h1>
+
+<div class="stats">
+  <div class="stat-box">
+    <div class="stat-value">{{ streak }}</div>
+    <div class="stat-label">Streak {%if streak > 0%}🔥{% endif %}</div>
+  </div>
+
+
+  <div class="stat-box">
+    <div class="stat-value">{{ weekly_minutes | format_time }}</div>
+    <div class="stat-label">Practice Time This Week</div>
+  </div>
+</div>
+
+<h3 class="section-title">Current Projects</h3>
+
+
+<div class="accordion" id="projectsAccordion">
+
+{% for p in projects %}
+
+  <div class="accordion-item">
+    <h2 class="accordion-header">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ p.project_id }}" aria-expanded="false" aria-controls="collapse{{p.project_id}}">
+        {{ p.title }}
+      </button>
+    </h2>
+    <div id="collapse{{p.project_id}}" class="accordion-collapse collapse" data-bs-parent="#projectsAccordion">
+      <div class="accordion-body">
+        <h3>Log Practice</h3>
+        <form method="POST" action="/project/{{ p.project_id }}/log">
+
+            
+            <input type="number" name="minutes" min="1" placeholder="Minutes" required>
+
+            <br>
+
+            <textarea autocomplete="off" name="notes" placeholder="Notes" rows="2"></textarea>
+            <button type="submit" class="btn btn-primary">Log</button>
+        
+
+            
+        </form>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+
+
+
+
+<h3 class="section-title"> Past Sessions </h3>
+{% for s in sessions %}
+
+    <button type="button"
+        class="session w-100 text-start border-0 bg-transparent"
+        data-bs-toggle="modal"
+        data-bs-target="#sessionModal"
+        data-id="{{ s.id }}"
+        data-minutes="{{ s.minutes }}"
+        data-notes="{{ s.notes|default('', true) }}">
+
+            <div class="session-header">
+                <h4>{{ s.composer }} - {{ s.title }}</h4>
+                
+                <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                    <span class="timestamp">{{ s.created_at | format_datetime }}</span>
+                    <strong>{{ s.minutes | format_time }}</strong>
+                </div>
+            </div>
+            
+                {% if s.notes %}
+                    <div class="notes">{{ s.notes }}</div>
+                {%endif%}
+            
+        </button>   
+
+{% endfor %}
+
+{% include "partials/session_modal.html" %}
+
+<script src="{{ url_for('static', filename='home.js') }}"></script>
+
+{% endblock %}
